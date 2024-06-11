@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paraphrase Text</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h2 {
+            color: #333;
+            margin-top: 20px;
+        }
+        #result {
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Paraphrase Text</h1>
+        <form id="paraphrase-form" method="post">
+            {% csrf_token %}
+            <textarea name="text" rows="4" placeholder="Enter text to paraphrase..."></textarea><br>
+            <button type="submit">Paraphrase</button>
+        </form>
+        <h2>Paraphrased Text</h2>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        document.getElementById('paraphrase-form').onsubmit = async function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            let csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            let response = await fetch('paraphrase', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: formData,
+            });
+            let data = await response.json();
+            if (data.paraphrased_text) {
+                document.getElementById('result').innerText = data.paraphrased_text;
+            } else {
+                document.getElementById('result').innerText = 'Error paraphrasing text.';
+            }
+        }
+    </script>
+</body>
+</html>
